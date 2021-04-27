@@ -21,7 +21,7 @@ class UrlHyperlinkedIdentityField(HyperlinkedIdentityField):
 
 class PhotoListSerializer(serializers.ModelSerializer):
     """Вывод списка фото для поста."""
-    url = UrlHyperlinkedIdentityField(view_name='photo-detail')
+    # url = UrlHyperlinkedIdentityField(view_name='photo-detail')
 
     class Meta:
         model = Photo
