@@ -26,7 +26,8 @@ class PhotoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
         fields = [
-            'url',
+            'id',
+            'image',
         ]
 
 
