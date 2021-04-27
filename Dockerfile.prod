@@ -1,0 +1,49 @@
+FROM python:3.8.3 as builder
+
+WORKDIR /usr/src/findme
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update
+RUN apt-get upgrade -y && apt-get install -y postgresql gcc python3-dev musl-dev
+
+RUN pip install --upgrade pip
+
+COPY . .
+
+COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/findme/wheels -r requirements.txt
+
+FROM python:3.8.3
+
+RUN mkdir -p /home/findme
+
+RUN groupadd findme
+RUN useradd -m -g findme findme -p 1234567
+RUN usermod -aG findme findme
+
+ENV HOME=/home/findme
+ENV APP_HOME=/home/findme/web
+RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME/media/
+
+
+WORKDIR $APP_HOME
+
+RUN apt-get update && apt-get install netcat -y
+
+COPY --from=builder /usr/src/findme/wheels /wheels
+COPY --from=builder /usr/src/findme/requirements.txt .
+RUN pip install --no-cache /wheels/*
+
+COPY ./entrypoint.prod.sh $APP_HOME
+
+COPY . $APP_HOME
+
+RUN chown -R findme:findme $APP_HOME
+
+
+USER findme
+
+ENTRYPOINT ["/home/findme/web/entrypoint.prod.sh"]
