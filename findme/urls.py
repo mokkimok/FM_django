@@ -5,7 +5,7 @@ from . import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('posts.urls')),
+    path('api/v1/', include('posts.urls')),
 ]
 
 if settings.DEBUG:

@@ -40,10 +40,22 @@ class PhotoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TagListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = [
+            'name',
+        ]
+
+    def to_representation(self, obj):
+        return obj.name
+
+
 class PostSerializer(serializers.ModelSerializer):
     """Вывод поста."""
     url = UrlHyperlinkedIdentityField(view_name='post-detail')
     photo = PhotoListSerializer(many=True)
+    tags = TagListSerializer(many=True)
 
     class Meta:
         model = Post
@@ -54,20 +66,8 @@ class PostListSerializer(serializers.ModelSerializer):
     """Вывод списка постов."""
     url = UrlHyperlinkedIdentityField(view_name='post-detail')
     photo = PhotoListSerializer(many=True)
+    tags = TagListSerializer(many=True)
 
     class Meta:
         model = Post
-        fields = [
-            'id',
-            'url',
-            'date_event',
-            'date_added',
-            'post_type',
-            'animal_sex',
-            'animal_kind',
-            'castrated',
-            'lat',
-            'lng',
-            'photo',
-            'description',
-        ]
+        fields = '__all__'

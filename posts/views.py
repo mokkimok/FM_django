@@ -29,7 +29,14 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
+        tags = request.data.pop('tags')
         new_post = Post.objects.create(**request.data)
+        for tag in tags:
+            try:
+                instance = Tag.objects.get(name=tag)
+            except BaseException:
+                instance = Tag.objects.create(name=tag)
+            instance.post.add(new_post)
         serializer = PostSerializer(new_post, context={'request': request})
         url = str(serializer.data.get('url'))
         return Response(serializer.data,

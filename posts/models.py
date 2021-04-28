@@ -55,7 +55,11 @@ class Photo(models.Model):
         return reverse('photo-detail', kwargs={'photo_pk': self.pk})
 
 
-# class Tag(models.Model):
-#     name = models.TextField(null=False, blank=True)
-#     posts = models.ManyToManyField(Post, on_delete=models.CASCADE,
-#                                    related_name='tags', null=True, blank=True)
+class Tag(models.Model):
+    """Тэги"""
+    name = models.CharField(max_length=20, null=True, blank=True, unique=True)
+    post = models.ManyToManyField(Post, related_name='tags', blank=True)
+
+    def __str__(self):
+        """Возвращает строковое представление модели."""
+        return str(self.name)
