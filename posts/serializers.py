@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField
-from .models import *
+from .models import Post, Photo, Tag, Comment
 
 
 class UrlHyperlinkedIdentityField(HyperlinkedIdentityField):
@@ -17,6 +17,30 @@ class UrlHyperlinkedIdentityField(HyperlinkedIdentityField):
                       }
         return self.reverse(view_name, kwargs=kwargs, request=request,
                             format=format)
+
+
+class FilterCommentsListSerializer(serializers.ListSerializer):
+    """Фильтр комментариев, только parents. """
+    def to_representation(self, data):
+        data = data.filter(parent=None)
+        return super().to_representation(data)
+
+
+class RecursiveSerializer(serializers.Serializer):
+    """Вывод рекурсивно children"""
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Вывод комментариев."""
+    children = RecursiveSerializer(many=True)
+    # owner = serializers.CurrentUserDefault
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
 
 
 class PhotoListSerializer(serializers.ModelSerializer):
@@ -56,6 +80,8 @@ class PostSerializer(serializers.ModelSerializer):
     url = UrlHyperlinkedIdentityField(view_name='post-detail')
     photo = PhotoListSerializer(many=True)
     tags = TagListSerializer(many=True)
+    comments = CommentSerializer(many=True)
+    # owner = serializers.CurrentUserDefault
 
     class Meta:
         model = Post
@@ -67,6 +93,7 @@ class PostListSerializer(serializers.ModelSerializer):
     url = UrlHyperlinkedIdentityField(view_name='post-detail')
     photo = PhotoListSerializer(many=True)
     tags = TagListSerializer(many=True)
+    # owner = serializers.CurrentUserDefault
 
     class Meta:
         model = Post

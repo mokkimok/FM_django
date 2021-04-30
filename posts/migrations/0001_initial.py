@@ -48,5 +48,29 @@ class Migration(migrations.Migration):
                                            to='posts.post')),
             ],
         ),
+        migrations.CreateModel(
+            name='Comment',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
+                ('date_added', models.DateTimeField(auto_now_add=True)),
+                ('text', models.TextField()),
+                # ('owner',
+                #  models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                #                    to=settings.AUTH_USER_MODEL)),
+                ('parent', models.ForeignKey(blank=True, null=True,
+                                             on_delete=django.db.models.deletion.SET_NULL,
+                                             related_name='children',
+                                             to='posts.comment',
+                                             verbose_name='Родитель')),
+                ('post',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='comments', to='posts.post')),
+            ],
+            options={
+                'verbose_name': 'Комментарий',
+                'verbose_name_plural': 'Комментарии',
+            },
+        ),
     ]
 

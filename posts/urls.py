@@ -18,4 +18,14 @@ urlpatterns = (
         'get': 'retrieve',
         'delete': 'destroy',
         }), name='photo-detail'),
+    path('posts/<int:pk>/comments/',
+         views.CommentsViewSet.as_view({
+             'get': 'list',
+             'post': 'create'
+         })),
+    path('posts/<int:pk>/comments/<int:comment_pk>/',
+         views.CommentsViewSet.as_view({
+             'get': 'retrieve',
+             'delete': 'destroy',
+         })),
     )

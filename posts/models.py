@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.reverse import reverse
+
+# User = get_user_model()
 
 
 class Post(models.Model):
@@ -18,6 +19,7 @@ class Post(models.Model):
         ('find', 'find'),
     ]
 
+    # owner = models.ForeignKey(User, on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
     date_event = models.DateTimeField(null=True, blank=True)
     post_type = models.CharField(max_length=20,
@@ -63,3 +65,25 @@ class Tag(models.Model):
     def __str__(self):
         """Возвращает строковое представление модели."""
         return str(self.name)
+
+
+class Comment(models.Model):
+    """Комментарии к постам."""
+    # owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,
+                             related_name='comments')
+    text = models.TextField(null=False, blank=False)
+    parent = models.ForeignKey(
+        'self', verbose_name="Родитель", on_delete=models.SET_NULL,
+        blank=True, null=True, related_name='children'
+    )
+
+    def __str__(self):
+        # return f"{self.owner} - {self.text}"
+        return f"{self.text}"
+
+    class Meta:
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
+
