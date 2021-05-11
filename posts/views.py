@@ -1,5 +1,6 @@
 from .serializers import *
-from rest_framework import viewsets, views, permissions, status
+from . import permissions
+from rest_framework import viewsets, views, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,6 +13,7 @@ class PostViewSet(viewsets.ModelViewSet):
     parser_classes = (JSONParser,)
     serializer_class = PostSerializer
     filter_backends = [DjangoFilterBackend]
+    permission_classes = [permissions.IsOwnerOrReadOnly]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(Post.objects.all())
@@ -30,7 +32,6 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        permission_classes = [permissions.IsAuthenticated]
         try:
             tags = request.data.pop('tags')
         except BaseException:
@@ -49,7 +50,6 @@ class PostViewSet(viewsets.ModelViewSet):
                         headers={'Location': url})
 
     def destroy(self, request, pk=None, *args, **kwargs):
-        permission_classes = [permissions.IsAuthenticated]
         post = Post.objects.get(pk=pk)
         post.delete()
         return Response(status=200)
@@ -57,8 +57,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class FileUploadView(views.APIView):
     """Загрузка фото с привязкой к id поста."""
-    permission_classes = [permissions.IsAuthenticated]
     parser_classes = (MultiPartParser,)
+    permission_classes = [permissions.IsOwnerOrReadOnly]
 
     def put(self, request, format=None):
         post_id = request.data.get('id')
@@ -75,6 +75,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
     lookup_fields = ('pk', 'photo_pk')
+    permission_classes = [permissions.IsOwnerOrReadOnly]
 
     def list(self, request, pk=None, photo_pk=None, *args, **kwargs):
         post = Post.objects.get(pk=pk)
@@ -92,7 +93,6 @@ class PhotoViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, pk=None, photo_pk=None, *args, **kwargs):
-        permission_classes = [permissions.IsAuthenticated]
         Photo.objects.get(pk=photo_pk).delete()
         return Response(status=200)
 
@@ -103,6 +103,7 @@ class CommentsViewSet(viewsets.ModelViewSet):
     parser_classes = (JSONParser,)
     serializer_class = CommentSerializer
     lookup_fields = ('pk', 'comment_pk')
+    permission_classes = [permissions.IsOwnerOrReadOnly]
 
     def list(self, request, pk=None, *args, **kwargs):
         post = Post.objects.get(pk=pk)
@@ -124,7 +125,6 @@ class CommentsViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, pk=None, *args, **kwargs):
-        permission_classes = [permissions.IsAuthenticated]
         post = Post.objects.get(pk=pk)
         parent = None
         if 'parent' in request.data:
@@ -138,7 +138,6 @@ class CommentsViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_201_CREATED)
 
     def destroy(self, request, pk=None, comment_pk=None, *args, **kwargs):
-        permission_classes = [permissions.IsAuthenticated]
         comment = Comment.objects.get(pk=comment_pk)
         comment.delete()
         return Response(status=200)
