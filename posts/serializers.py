@@ -81,7 +81,7 @@ class PostSerializer(serializers.ModelSerializer):
     photo = PhotoListSerializer(many=True)
     tags = TagListSerializer(many=True)
     comments = CommentSerializer(many=True)
-    # owner = serializers.CurrentUserDefault
+    owner = serializers.CurrentUserDefault
 
     class Meta:
         model = Post
@@ -93,7 +93,7 @@ class PostListSerializer(serializers.ModelSerializer):
     url = UrlHyperlinkedIdentityField(view_name='post-detail')
     photo = PhotoListSerializer(many=True)
     tags = TagListSerializer(many=True)
-    # owner = serializers.CurrentUserDefault
+    owner = serializers.CurrentUserDefault
 
     class Meta:
         model = Post

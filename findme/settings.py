@@ -165,7 +165,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 12
 }
 
 DJOSER = {
@@ -206,6 +206,6 @@ SIMPLE_JWT = {
 
 # EMAIL_USE_TLS = True
 # EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = '@gmail.com'
+# EMAIL_HOST_USER = 'findmeprjct@gmail.com'
 # EMAIL_HOST_PASSWORD = ''
 # EMAIL_PORT = 587

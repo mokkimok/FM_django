@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from rest_framework.reverse import reverse
 
-# User = get_user_model()
+User = get_user_model()
 
 
 class Post(models.Model):
@@ -16,10 +16,10 @@ class Post(models.Model):
     ]
     POST_TYPE_CHOICES = [
         ('lost', 'lost'),
-        ('find', 'find'),
+        ('found', 'found'),
     ]
 
-    # owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
     date_event = models.DateTimeField(null=True, blank=True)
     post_type = models.CharField(max_length=20,
@@ -46,6 +46,11 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
 
+    class Meta:
+        verbose_name = "Пост"
+        verbose_name_plural = "Посты"
+        ordering = ['-date_added']
+
 
 class Photo(models.Model):
     """Фото постов."""
@@ -55,6 +60,10 @@ class Photo(models.Model):
 
     def get_absolute_url(self):
         return reverse('photo-detail', kwargs={'photo_pk': self.pk})
+
+    class Meta:
+        verbose_name = "Фото"
+        verbose_name_plural = "Фото"
 
 
 class Tag(models.Model):
@@ -66,10 +75,14 @@ class Tag(models.Model):
         """Возвращает строковое представление модели."""
         return str(self.name)
 
+    class Meta:
+        verbose_name = "Тэг"
+        verbose_name_plural = "Тэги"
+
 
 class Comment(models.Model):
     """Комментарии к постам."""
-    # owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              related_name='comments')
@@ -80,8 +93,7 @@ class Comment(models.Model):
     )
 
     def __str__(self):
-        # return f"{self.owner} - {self.text}"
-        return f"{self.text}"
+        return f"{self.owner} - {self.text}"
 
     class Meta:
         verbose_name = "Комментарий"

@@ -30,7 +30,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        # permission_classes = [permissions.IsAuthenticated]
+        permission_classes = [permissions.IsAuthenticated]
         tags = request.data.pop('tags')
         new_post = Post.objects.create(**request.data,
                                        # owner=request.user,
@@ -48,7 +48,7 @@ class PostViewSet(viewsets.ModelViewSet):
                         headers={'Location': url})
 
     def destroy(self, request, pk=None, *args, **kwargs):
-        # permission_classes = [permissions.IsAuthenticated]
+        permission_classes = [permissions.IsAuthenticated]
         post = Post.objects.get(pk=pk)
         post.delete()
         return Response(status=200)
@@ -56,7 +56,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class FileUploadView(views.APIView):
     """Загрузка фото с привязкой к id поста."""
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     parser_classes = (MultiPartParser,)
 
     def put(self, request, format=None):
@@ -91,7 +91,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, pk=None, photo_pk=None, *args, **kwargs):
-        # permission_classes = [permissions.IsAuthenticated]
+        permission_classes = [permissions.IsAuthenticated]
         Photo.objects.get(pk=photo_pk).delete()
         return Response(status=200)
 
@@ -123,7 +123,7 @@ class CommentsViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, pk=None, *args, **kwargs):
-        # permission_classes = [permissions.IsAuthenticated]
+        permission_classes = [permissions.IsAuthenticated]
         post = Post.objects.get(pk=pk)
         parent = None
         if 'parent' in request.data:
@@ -137,7 +137,7 @@ class CommentsViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_201_CREATED)
 
     def destroy(self, request, pk=None, comment_pk=None, *args, **kwargs):
-        # permission_classes = [permissions.IsAuthenticated]
+        permission_classes = [permissions.IsAuthenticated]
         comment = Comment.objects.get(pk=comment_pk)
         comment.delete()
         return Response(status=200)
