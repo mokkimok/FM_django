@@ -36,7 +36,7 @@ class RecursiveSerializer(serializers.Serializer):
 class CommentSerializer(serializers.ModelSerializer):
     """Вывод комментариев."""
     children = RecursiveSerializer(many=True)
-    # owner = serializers.CurrentUserDefault
+    owner = serializers.CurrentUserDefault
 
     class Meta:
         model = Comment

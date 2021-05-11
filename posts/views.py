@@ -31,10 +31,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         permission_classes = [permissions.IsAuthenticated]
-        tags = request.data.pop('tags')
-        new_post = Post.objects.create(**request.data,
-                                       # owner=request.user,
-                                       )
+        try:
+            tags = request.data.pop('tags')
+        except BaseException:
+            tags = []
+        new_post = Post.objects.create(**request.data, owner=request.user)
         for tag in tags:
             try:
                 instance = Tag.objects.get(name=tag)
@@ -130,7 +131,7 @@ class CommentsViewSet(viewsets.ModelViewSet):
             parent_pk = request.data.pop('parent')
             parent = Comment.objects.get(pk=parent_pk)
         new_comment = Comment.objects.create(**request.data, post=post,
-                                             # owner=request.user,
+                                             owner=request.user,
                                              parent=parent)
         serializer = CommentSerializer(new_comment, context={'request': request})
         return Response(serializer.data,
