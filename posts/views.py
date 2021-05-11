@@ -1,5 +1,8 @@
+from rest_framework.filters import SearchFilter
+
 from .serializers import *
 from . import permissions
+from .service import PostFilter
 from rest_framework import viewsets, views, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser
@@ -13,6 +16,7 @@ class PostViewSet(viewsets.ModelViewSet):
     parser_classes = (JSONParser,)
     serializer_class = PostSerializer
     filter_backends = [DjangoFilterBackend]
+    filterset_class = PostFilter
     permission_classes = [permissions.IsOwnerOrReadOnly]
 
     def list(self, request, *args, **kwargs):
