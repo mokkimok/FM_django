@@ -32,6 +32,10 @@ class PostViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None, *args, **kwargs):
         queryset = Post.objects.all()
         post = get_object_or_404(queryset, pk=pk)
+
+        with open('./logs.txt', 'a') as logs:
+            logs.write(f"{request.user} просмотрел пост пользователя {post.owner}.\n")
+
         serializer = PostSerializer(post, context={'request': request})
         return Response(serializer.data)
 
@@ -52,11 +56,6 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
                         headers={'Location': url})
-
-    def destroy(self, request, pk=None, *args, **kwargs):
-        post = Post.objects.get(pk=pk)
-        post.delete()
-        return Response(status=200)
 
 
 class FileUploadView(views.APIView):
